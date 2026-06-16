@@ -102,75 +102,77 @@ artifacts {
     archives javadocsJar, sourcesJar
 }
 
-publishing {
-    publications {
-        aar(MavenPublication) {
-            groupId = projectGroupId ?: projectArtifactId
-            artifactId = projectArtifactId
-            version = projectVersionName
+afterEvaluate {
+    publishing {
+        publications {
+            aar(MavenPublication) {
+                groupId = projectGroupId ?: projectArtifactId
+                artifactId = projectArtifactId
+                version = projectVersionName
 
-            if (isAndroidProject) {
-                from components.release
-            } else {
-                from components.java
-            }
-            artifact javadocsJar
-            artifact sourcesJar
+                if (isAndroidProject) {
+                    from components.release
+                } else {
+                    from components.java
+                }
+                artifact javadocsJar
+                artifact sourcesJar
 
-            pom {
-                name = projectArtifactId
-                description = projectDescription ?: projectArtifactId
-                url = projectGitUrl ?: ""
-                licenses {
-                    license {
-                        name = projectLicense ?: "Apache-2.0"
-                        url = projectLicenseUrl ?: "https://opensource.org/licenses/Apache-2.0"
-                    }
-                }
-                developers {
-                    developer {
-                        id = developerAuthorId ?: ""
-                        name = developerAuthorName ?: ""
-                        email = developerAuthorEmail ?: ""
-                    }
-                }
-                scm {
-                    connection = "scm:git:${projectGitUrl ?: ''}"
-                    developerConnection = "scm:git:${projectGitUrl ?: ''}"
+                pom {
+                    name = projectArtifactId
+                    description = projectDescription ?: projectArtifactId
                     url = projectGitUrl ?: ""
+                    licenses {
+                        license {
+                            name = projectLicense ?: "Apache-2.0"
+                            url = projectLicenseUrl ?: "https://opensource.org/licenses/Apache-2.0"
+                        }
+                    }
+                    developers {
+                        developer {
+                            id = developerAuthorId ?: ""
+                            name = developerAuthorName ?: ""
+                            email = developerAuthorEmail ?: ""
+                        }
+                    }
+                    scm {
+                        connection = "scm:git:${projectGitUrl ?: ''}"
+                        developerConnection = "scm:git:${projectGitUrl ?: ''}"
+                        url = projectGitUrl ?: ""
+                    }
+                    withXml {
+                        def dependenciesNode = asNode().appendNode('dependencies')
+                        project.configurations.implementation.allDependencies.each {
+                            def dependencyNode = dependenciesNode.appendNode('dependency')
+                            dependencyNode.appendNode('groupId', it.group)
+                            dependencyNode.appendNode('artifactId', it.name)
+                            dependencyNode.appendNode('version', it.version)
+                        }
+                    }
                 }
-                withXml {
-                    def dependenciesNode = asNode().appendNode('dependencies')
-                    project.configurations.implementation.allDependencies.each {
-                        def dependencyNode = dependenciesNode.appendNode('dependency')
-                        dependencyNode.appendNode('groupId', it.group)
-                        dependencyNode.appendNode('artifactId', it.name)
-                        dependencyNode.appendNode('version', it.version)
+            }
+        }
+
+        // Sonatype 仓库（仅非 JitPack 环境配置）
+        if (isSonatypePublish) {
+            repositories {
+                maven {
+                    name = projectArtifactId
+                    def releasesRepoUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+                    def snapshotsRepoUrl = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+                    url = projectVersionName.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+                    credentials {
+                        username mavenUsername
+                        password mavenPassword
                     }
                 }
             }
         }
     }
 
-    // Sonatype 仓库（仅非 JitPack 环境配置）
     if (isSonatypePublish) {
-        repositories {
-            maven {
-                name = projectArtifactId
-                def releasesRepoUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
-                def snapshotsRepoUrl = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
-                url = projectVersionName.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
-                credentials {
-                    username mavenUsername
-                    password mavenPassword
-                }
-            }
+        signing {
+            sign publishing.publications
         }
-    }
-}
-
-if (isSonatypePublish) {
-    signing {
-        sign publishing.publications
     }
 }
