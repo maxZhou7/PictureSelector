@@ -35,9 +35,9 @@ if (hasLocalProps) {
     developerAuthorName = mavenUsername
 }
 
-// JitPack 环境使用默认值
+// JitPack 环境使用默认值（groupId 必须包含仓库名，否则产物路径与 JitPack 路由不匹配）
 if (isJitPack) {
-    projectGroupId = projectGroupId ?: 'com.github.maxZhou7'  // ← 替换为你的 GitHub 用户名
+    projectGroupId = projectGroupId ?: 'com.github.maxZhou7.PictureSelector'  // ← 必须包含仓库名，否则 JitPack 路由不匹配
     projectDescription = projectDescription ?: projectArtifactId
     projectGitUrl = projectGitUrl ?: "https://github.com/maxZhou7/PictureSelector"  // ← 替换为你的仓库地址
     projectLicense = projectLicense ?: "Apache-2.0"
@@ -145,11 +145,26 @@ afterEvaluate {
                     }
                     withXml {
                         def dependenciesNode = asNode().appendNode('dependencies')
-                        project.configurations.implementation.allDependencies.each {
-                            def dependencyNode = dependenciesNode.appendNode('dependency')
-                            dependencyNode.appendNode('groupId', it.group)
-                            dependencyNode.appendNode('artifactId', it.name)
-                            dependencyNode.appendNode('version', it.version)
+                        def added = [] as Set
+                        // api 依赖（消费者编译时需要）→ compile scope
+                        project.configurations.api.allDependencies.each { dep ->
+                            if (dep.group && added.add("${dep.group}:${dep.name}")) {
+                                def node = dependenciesNode.appendNode('dependency')
+                                node.appendNode('groupId', dep.group)
+                                node.appendNode('artifactId', dep.name)
+                                node.appendNode('version', dep.version)
+                                node.appendNode('scope', 'compile')
+                            }
+                        }
+                        // implementation 依赖（运行时需要）→ runtime scope
+                        project.configurations.implementation.allDependencies.each { dep ->
+                            if (dep.group && added.add("${dep.group}:${dep.name}")) {
+                                def node = dependenciesNode.appendNode('dependency')
+                                node.appendNode('groupId', dep.group)
+                                node.appendNode('artifactId', dep.name)
+                                node.appendNode('version', dep.version)
+                                node.appendNode('scope', 'runtime')
+                            }
                         }
                     }
                 }
