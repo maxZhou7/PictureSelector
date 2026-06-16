@@ -111,7 +111,10 @@ afterEvaluate {
                 version = projectVersionName
 
                 if (isAndroidProject) {
-                    from components.release
+                    // 直接指定 AAR 产物，避免依赖 components.release（AGP 8.x 兼容性更好）
+                    artifact("$buildDir/outputs/aar/${project.name}-release.aar") {
+                        builtBy "assembleRelease"
+                    }
                 } else {
                     from components.java
                 }
