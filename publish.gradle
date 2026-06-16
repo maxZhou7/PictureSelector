@@ -110,9 +110,9 @@ publishing {
             version = projectVersionName
 
             if (isAndroidProject) {
-                artifact("$buildDir/outputs/aar/${project.getName()}-release.aar")
+                from components.release
             } else {
-                artifact("$buildDir/libs/${project.getName()}.jar")
+                from components.java
             }
             artifact javadocsJar
             artifact sourcesJar
