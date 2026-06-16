@@ -1,6 +1,6 @@
 ext {
     cfgs = [
-            versionCode                   : 97,
-            versionName                   : "v4.0.3",
+            versionCode                   : 98,
+            versionName                   : "v4.0.4",
     ]
 }
