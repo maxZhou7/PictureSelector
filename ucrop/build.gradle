@@ -44,10 +44,10 @@ ext {
 apply from: '../publish.gradle'
 
 dependencies {
-    implementation "androidx.appcompat:appcompat:${cfgs.version_appcompat}"
-    implementation "androidx.exifinterface:exifinterface:${cfgs.exifinterface_version}"
-    implementation "androidx.transition:transition:${cfgs.transition}"
-    implementation "com.squareup.okhttp3:okhttp:${cfgs.okhttp}"
-    implementation "androidx.recyclerview:recyclerview:${cfgs.version_recyclerview}"
-    implementation "com.google.code.gson:gson:${cfgs.gson}"
+    implementation libs.androidx.appcompat
+    implementation libs.androidx.exifinterface
+    implementation libs.androidx.transition
+    implementation libs.okhttp
+    implementation libs.androidx.recyclerview
+    implementation libs.gson
 }
