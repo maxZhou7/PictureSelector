@@ -1,11 +1,12 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 29
+    namespace "com.yalantis.ucrop"
+    compileSdk 34
 
     defaultConfig {
-        minSdkVersion 19
-        targetSdkVersion 29
+        minSdk 19
+        targetSdk 34
         vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
@@ -15,11 +16,15 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_7
-        targetCompatibility JavaVersion.VERSION_1_7
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
-    lintOptions {
+    lint {
         abortOnError false
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 
     resourcePrefix 'ucrop_'

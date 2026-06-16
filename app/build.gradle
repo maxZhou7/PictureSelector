@@ -7,6 +7,7 @@ static def releaseTime() {
 }
 
 android {
+    namespace "com.luck.pictureselector"
     compileSdk 34
 
     defaultConfig {
@@ -59,18 +60,14 @@ android {
         }
     }
 
-    dexOptions {
-        javaMaxHeapSize "4g"
-    }
-
-    lintOptions {
+    lint {
         checkReleaseBuilds false
         abortOnError false
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 }
 

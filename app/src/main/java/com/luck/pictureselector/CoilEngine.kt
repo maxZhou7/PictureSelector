@@ -10,7 +10,7 @@ import com.luck.picture.lib.utils.ActivityCompatHelper
 
 /**
  * @author：luck
- * @date：2022/2/14 3:00 下午
+ * @date�?022/2/14 3:00 下午
  * @describe：CoilEngine
  */
 class CoilEngine : ImageEngine {
@@ -55,7 +55,7 @@ class CoilEngine : ImageEngine {
             .data(url)
             .transformations(RoundedCornersTransformation(8F))
             .size(180, 180)
-            .placeholder(R.drawable.ps_image_placeholder)
+            .placeholder(com.luck.picture.lib.R.drawable.ps_image_placeholder)
             .target(imageView)
             .build()
         context.imageLoader.enqueue(target)
@@ -69,7 +69,7 @@ class CoilEngine : ImageEngine {
         val target = ImageRequest.Builder(context)
             .data(url)
             .size(270, 270)
-            .placeholder(R.drawable.ps_image_placeholder)
+            .placeholder(com.luck.picture.lib.R.drawable.ps_image_placeholder)
             .target(imageView)
             .build()
         context.imageLoader.enqueue(target)

@@ -11,7 +11,7 @@ import com.luck.picture.lib.utils.ActivityCompatHelper;
 
 /**
  * @author：luck
- * @date：2019-11-13 17:02
+ * @date�?019-11-13 17:02
  * @describe：Glide加载引擎
  */
 public class GlideEngine implements ImageEngine {
@@ -19,7 +19,7 @@ public class GlideEngine implements ImageEngine {
     /**
      * 加载图片
      *
-     * @param context   上下文
+     * @param context   上下�?
      * @param url       资源url
      * @param imageView 图片承载控件
      */
@@ -47,7 +47,7 @@ public class GlideEngine implements ImageEngine {
     /**
      * 加载相册目录封面
      *
-     * @param context   上下文
+     * @param context   上下�?
      * @param url       图片路径
      * @param imageView 承载图片ImageView
      */
@@ -62,7 +62,7 @@ public class GlideEngine implements ImageEngine {
                 .override(180, 180)
                 .sizeMultiplier(0.5f)
                 .transform(new CenterCrop(), new RoundedCorners(8))
-                .placeholder(R.drawable.ps_image_placeholder)
+                .placeholder(com.luck.picture.lib.R.drawable.ps_image_placeholder)
                 .into(imageView);
     }
 
@@ -70,7 +70,7 @@ public class GlideEngine implements ImageEngine {
     /**
      * 加载图片列表图片
      *
-     * @param context   上下文
+     * @param context   上下�?
      * @param url       图片路径
      * @param imageView 承载图片ImageView
      */
@@ -83,7 +83,7 @@ public class GlideEngine implements ImageEngine {
                 .load(url)
                 .override(200, 200)
                 .centerCrop()
-                .placeholder(R.drawable.ps_image_placeholder)
+                .placeholder(com.luck.picture.lib.R.drawable.ps_image_placeholder)
                 .into(imageView);
     }
 

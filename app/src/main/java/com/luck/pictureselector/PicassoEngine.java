@@ -17,7 +17,7 @@ import java.io.File;
 
 /**
  * @author：luck
- * @date：2020/4/30 10:54 AM
+ * @date�?020/4/30 10:54 AM
  * @describe：Picasso加载引擎
  */
 public class PicassoEngine implements ImageEngine {
@@ -69,7 +69,7 @@ public class PicassoEngine implements ImageEngine {
     /**
      * 加载相册目录
      *
-     * @param context   上下文
+     * @param context   上下�?
      * @param url       图片路径
      * @param imageView 承载图片ImageView
      */
@@ -86,7 +86,7 @@ public class PicassoEngine implements ImageEngine {
                     .centerCrop()
                     .noFade()
                     .transform(new RoundedCornersTransform(8))
-                    .placeholder(R.drawable.ps_image_placeholder)
+                    .placeholder(com.luck.picture.lib.R.drawable.ps_image_placeholder)
                     .into(imageView);
         } else {
             if (PictureMimeType.isUrlHasVideo(url)) {
@@ -98,7 +98,7 @@ public class PicassoEngine implements ImageEngine {
                         .centerCrop()
                         .noFade()
                         .transform(new RoundedCornersTransform(8))
-                        .placeholder(R.drawable.ps_image_placeholder)
+                        .placeholder(com.luck.picture.lib.R.drawable.ps_image_placeholder)
                         .into(imageView);
             } else {
                 Picasso.get()
@@ -107,7 +107,7 @@ public class PicassoEngine implements ImageEngine {
                         .centerCrop()
                         .noFade()
                         .transform(new RoundedCornersTransform(8))
-                        .placeholder(R.drawable.ps_image_placeholder)
+                        .placeholder(com.luck.picture.lib.R.drawable.ps_image_placeholder)
                         .into(imageView);
             }
         }
@@ -117,7 +117,7 @@ public class PicassoEngine implements ImageEngine {
     /**
      * 加载图片列表图片
      *
-     * @param context   上下文
+     * @param context   上下�?
      * @param url       图片路径
      * @param imageView 承载图片ImageView
      */
@@ -133,7 +133,7 @@ public class PicassoEngine implements ImageEngine {
                     .resize(200, 200)
                     .centerCrop()
                     .noFade()
-                    .placeholder(R.drawable.ps_image_placeholder)
+                    .placeholder(com.luck.picture.lib.R.drawable.ps_image_placeholder)
                     .into(imageView);
         } else {
             if (PictureMimeType.isUrlHasVideo(url)) {
@@ -144,7 +144,7 @@ public class PicassoEngine implements ImageEngine {
                         .resize(200, 200)
                         .centerCrop()
                         .noFade()
-                        .placeholder(R.drawable.ps_image_placeholder)
+                        .placeholder(com.luck.picture.lib.R.drawable.ps_image_placeholder)
                         .into(imageView);
             } else {
                 Picasso.get()
@@ -152,7 +152,7 @@ public class PicassoEngine implements ImageEngine {
                         .resize(200, 200)
                         .centerCrop()
                         .noFade()
-                        .placeholder(R.drawable.ps_image_placeholder)
+                        .placeholder(com.luck.picture.lib.R.drawable.ps_image_placeholder)
                         .into(imageView);
             }
         }
