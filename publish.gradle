@@ -1,36 +1,57 @@
 apply plugin: 'maven-publish'
-apply plugin: 'signing'
 
-Properties localProperties = new Properties()
-localProperties.load(project.rootProject.file('local.properties').newDataInputStream())
-localProperties.each { name, value ->
-    project.ext[name] = value
-}
+// 检测发布环境
+def isJitPack = System.getenv("JITPACK") == "true"
+def hasLocalProps = project.rootProject.file('local.properties').exists()
 
-def mavenUsername = localProperties.getProperty("sonatype.username")
-def mavenPassword = localProperties.getProperty("sonatype.password")
-def projectGroupId = localProperties.getProperty("groupId")
+def mavenUsername = null
+def mavenPassword = null
+def projectGroupId = null
 def projectArtifactId = PUBLISH_ARTIFACT_ID
 def projectVersionName = cfgs.versionName
-def projectDescription = localProperties.getProperty("description")
-def projectGitUrl = localProperties.getProperty("gitUrl")
-def projectLicense = localProperties.getProperty("license")
-def projectLicenseUrl = projectLicense ? "https://opensource.org/licenses/${projectLicense.toString().replace(" ", "-")} " : null
-def developerAuthorEmail = localProperties.getProperty("email")
+def projectDescription = null
+def projectGitUrl = null
+def projectLicense = null
+def projectLicenseUrl = null
+def developerAuthorEmail = null
+def developerAuthorId = null
+def developerAuthorName = null
 
-def developerAuthorId = mavenUsername
-def developerAuthorName = mavenUsername
-
-
-println("${mavenUsername} ${mavenPassword} - ${projectGroupId}:${projectArtifactId}:${projectVersionName}")
-println("${projectLicense} - ${projectLicenseUrl}")
-
-if (!mavenUsername || !mavenPassword || !projectGroupId || !projectArtifactId || !projectVersionName) {
-    println('Error：缺少参数')
-    return
+if (hasLocalProps) {
+    Properties localProperties = new Properties()
+    localProperties.load(project.rootProject.file('local.properties').newDataInputStream())
+    localProperties.each { name, value ->
+        project.ext[name] = value
+    }
+    mavenUsername = localProperties.getProperty("sonatype.username")
+    mavenPassword = localProperties.getProperty("sonatype.password")
+    projectGroupId = localProperties.getProperty("groupId")
+    projectDescription = localProperties.getProperty("description")
+    projectGitUrl = localProperties.getProperty("gitUrl")
+    projectLicense = localProperties.getProperty("license")
+    projectLicenseUrl = projectLicense ? "https://opensource.org/licenses/${projectLicense.toString().replace(" ", "-")}" : null
+    developerAuthorEmail = localProperties.getProperty("email")
+    developerAuthorId = mavenUsername
+    developerAuthorName = mavenUsername
 }
-if (!projectDescription || !projectGitUrl || !projectLicense || !projectLicenseUrl || !developerAuthorId || !developerAuthorName || !developerAuthorEmail) {
-    println('Warning：缺少可选信息')
+
+// JitPack 环境使用默认值
+if (isJitPack) {
+    projectGroupId = projectGroupId ?: 'com.github.maxZhou7'  // ← 替换为你的 GitHub 用户名
+    projectDescription = projectDescription ?: projectArtifactId
+    projectGitUrl = projectGitUrl ?: "https://github.com/maxZhou7/PictureSelector"  // ← 替换为你的仓库地址
+    projectLicense = projectLicense ?: "Apache-2.0"
+    projectLicenseUrl = projectLicenseUrl ?: "https://opensource.org/licenses/Apache-2.0"
+    println("[JitPack] ${projectGroupId}:${projectArtifactId}:${projectVersionName}")
+}
+
+// Sonatype 发布需要 signing
+def isSonatypePublish = !isJitPack && mavenUsername && mavenPassword && projectGroupId
+if (isSonatypePublish) {
+    apply plugin: 'signing'
+    println("[Sonatype] ${projectGroupId}:${projectArtifactId}:${projectVersionName}")
+} else if (!isJitPack) {
+    println('Warning：缺少Sonatype发布参数，仅生成本地产物')
 }
 
 def isAndroidProject = project.hasProperty('android')
@@ -84,10 +105,10 @@ artifacts {
 publishing {
     publications {
         aar(MavenPublication) {
-            groupId = projectGroupId
+            groupId = projectGroupId ?: projectArtifactId
             artifactId = projectArtifactId
             version = projectVersionName
-            // Tell maven to prepare the generated "*.aar" file for publishing
+
             if (isAndroidProject) {
                 artifact("$buildDir/outputs/aar/${project.getName()}-release.aar")
             } else {
@@ -98,27 +119,25 @@ publishing {
 
             pom {
                 name = projectArtifactId
-                description = projectDescription
-                // If your project has a dedicated site, use its URL here
-                url = projectGitUrl
+                description = projectDescription ?: projectArtifactId
+                url = projectGitUrl ?: ""
                 licenses {
                     license {
-                        name = projectLicense
-                        url = projectLicenseUrl
+                        name = projectLicense ?: "Apache-2.0"
+                        url = projectLicenseUrl ?: "https://opensource.org/licenses/Apache-2.0"
                     }
                 }
                 developers {
                     developer {
-                        id = developerAuthorId
-                        name = developerAuthorName
-                        email = developerAuthorEmail
+                        id = developerAuthorId ?: ""
+                        name = developerAuthorName ?: ""
+                        email = developerAuthorEmail ?: ""
                     }
                 }
-                // Version control info, if you're using GitHub, follow the format as seen here
                 scm {
-                    connection = "scm:git:${projectGitUrl}"
-                    developerConnection = "scm:git:${projectGitUrl}"
-                    url = projectGitUrl
+                    connection = "scm:git:${projectGitUrl ?: ''}"
+                    developerConnection = "scm:git:${projectGitUrl ?: ''}"
+                    url = projectGitUrl ?: ""
                 }
                 withXml {
                     def dependenciesNode = asNode().appendNode('dependencies')
@@ -133,25 +152,25 @@ publishing {
         }
     }
 
-    repositories {
-        maven {
-            name = projectArtifactId
-
-            def releasesRepoUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
-            def snapshotsRepoUrl = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
-            // You only need this if you want to publish snapshots, otherwise just set the URL
-            // to the release repo directly
-            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
-
-            // The username and password we've fetched earlier
-            credentials {
-                username mavenUsername
-                password mavenPassword
+    // Sonatype 仓库（仅非 JitPack 环境配置）
+    if (isSonatypePublish) {
+        repositories {
+            maven {
+                name = projectArtifactId
+                def releasesRepoUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+                def snapshotsRepoUrl = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+                url = projectVersionName.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+                credentials {
+                    username mavenUsername
+                    password mavenPassword
+                }
             }
         }
     }
 }
 
-signing {
-    sign publishing.publications
+if (isSonatypePublish) {
+    signing {
+        sign publishing.publications
+    }
 }
