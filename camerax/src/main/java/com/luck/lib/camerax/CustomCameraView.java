@@ -1,8 +1,5 @@
 package com.luck.lib.camerax;
 
-import static androidx.camera.core.VideoCapture.ERROR_RECORDING_TOO_SHORT;
-import static androidx.camera.view.video.OnVideoSavedCallback.ERROR_MUXER;
-
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -47,8 +44,15 @@ import androidx.camera.core.MeteringPoint;
 import androidx.camera.core.MeteringPointFactory;
 import androidx.camera.core.Preview;
 import androidx.camera.core.UseCaseGroup;
-import androidx.camera.core.VideoCapture;
 import androidx.camera.core.ZoomState;
+import androidx.camera.video.FileOutputOptions;
+import androidx.camera.video.MediaStoreOutputOptions;
+import androidx.camera.video.OutputResults;
+import androidx.camera.video.PendingRecording;
+import androidx.camera.video.Recorder;
+import androidx.camera.video.Recording;
+import androidx.camera.video.VideoCapture;
+import androidx.camera.video.VideoRecordEvent;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.LifecycleCameraController;
 import androidx.camera.view.PreviewView;
@@ -109,7 +113,9 @@ public class CustomCameraView extends RelativeLayout implements CameraXOrientati
     private ProcessCameraProvider mCameraProvider;
     private ImageCapture mImageCapture;
     private ImageAnalysis mImageAnalyzer;
-    private VideoCapture mVideoCapture;
+    private VideoCapture<Recorder> mVideoCapture;
+    private Recorder mRecorder;
+    private Recording mRecording;
 
     private int displayId = -1;
     /**
@@ -306,7 +312,6 @@ public class CustomCameraView extends RelativeLayout implements CameraXOrientati
                 mSwitchCamera.setVisibility(INVISIBLE);
                 mFlashLamp.setVisibility(INVISIBLE);
                 tvCurrentTime.setVisibility(isDisplayRecordTime ? VISIBLE : GONE);
-                VideoCapture.OutputFileOptions fileOptions;
                 File cameraFile;
                 if (isSaveExternal()) {
                     cameraFile = FileUtils.createTempFile(getContext(), true);
@@ -314,39 +319,31 @@ public class CustomCameraView extends RelativeLayout implements CameraXOrientati
                     cameraFile = FileUtils.createCameraFile(getContext(), CameraUtils.TYPE_VIDEO,
                             outPutCameraFileName, videoFormat, outPutCameraDir);
                 }
-                fileOptions = new VideoCapture.OutputFileOptions.Builder(cameraFile).build();
-                mVideoCapture.startRecording(fileOptions, mainExecutor,
-                        new VideoCapture.OnVideoSavedCallback() {
-                            @Override
-                            public void onVideoSaved(@NonNull @NotNull VideoCapture.OutputFileResults outputFileResults) {
-                                long minSecond = recordVideoMinSecond <= 0 ? CustomCameraConfig.DEFAULT_MIN_RECORD_VIDEO : recordVideoMinSecond;
-                                if (recordTime < minSecond || outputFileResults.getSavedUri() == null) {
-                                    return;
-                                }
-                                Uri savedUri = outputFileResults.getSavedUri();
-                                SimpleCameraX.putOutputUri(activity.getIntent(), savedUri);
-                                String outPutPath = FileUtils.isContent(savedUri.toString()) ? savedUri.toString() : savedUri.getPath();
-                                mTextureView.setVisibility(View.VISIBLE);
-                                tvCurrentTime.setVisibility(GONE);
-                                if (mTextureView.isAvailable()) {
-                                    startVideoPlay(outPutPath);
-                                } else {
-                                    mTextureView.setSurfaceTextureListener(surfaceTextureListener);
-                                }
+                FileOutputOptions fileOutputOptions = new FileOutputOptions.Builder(cameraFile).build();
+                PendingRecording pendingRecording = mRecorder.prepareRecording(getContext(), fileOutputOptions);
+                mRecording = pendingRecording.start(mainExecutor, videoRecordEvent -> {
+                    if (videoRecordEvent instanceof VideoRecordEvent.Finalize) {
+                        VideoRecordEvent.Finalize finalizeEvent = (VideoRecordEvent.Finalize) videoRecordEvent;
+                        long minSecond = recordVideoMinSecond <= 0 ? CustomCameraConfig.DEFAULT_MIN_RECORD_VIDEO : recordVideoMinSecond;
+                        if (finalizeEvent.hasError() || recordTime < minSecond) {
+                            if (mCameraListener != null) {
+                                mCameraListener.onError(finalizeEvent.getError(), "An error occurred during recording", null);
                             }
-
-                            @Override
-                            public void onError(int videoCaptureError, @NonNull @NotNull String message,
-                                                @Nullable @org.jetbrains.annotations.Nullable Throwable cause) {
-                                if (mCameraListener != null) {
-                                    if (videoCaptureError == ERROR_RECORDING_TOO_SHORT || videoCaptureError == ERROR_MUXER) {
-                                        recordShort(0);
-                                    } else {
-                                        mCameraListener.onError(videoCaptureError, message, cause);
-                                    }
-                                }
-                            }
-                        });
+                            return;
+                        }
+                        OutputResults outputResults = finalizeEvent.getOutputResults();
+                        Uri savedUri = outputResults.getOutputUri();
+                        SimpleCameraX.putOutputUri(activity.getIntent(), savedUri);
+                        String outPutPath = FileUtils.isContent(savedUri.toString()) ? savedUri.toString() : savedUri.getPath();
+                        mTextureView.setVisibility(View.VISIBLE);
+                        tvCurrentTime.setVisibility(GONE);
+                        if (mTextureView.isAvailable()) {
+                            startVideoPlay(outPutPath);
+                        } else {
+                            mTextureView.setSurfaceTextureListener(surfaceTextureListener);
+                        }
+                    }
+                });
             }
 
             @Override
@@ -374,7 +371,7 @@ public class CustomCameraView extends RelativeLayout implements CameraXOrientati
                 mCaptureLayout.resetCaptureLayout();
                 mCaptureLayout.setTextWithAnimation(getContext().getString(R.string.picture_recording_time_is_short));
                 try {
-                    mVideoCapture.stopRecording();
+                    mRecording.stop();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -384,7 +381,7 @@ public class CustomCameraView extends RelativeLayout implements CameraXOrientati
             public void recordEnd(long time) {
                 recordTime = time;
                 try {
-                    mVideoCapture.stopRecording();
+                    mRecording.stop();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -804,16 +801,11 @@ public class CustomCameraView extends RelativeLayout implements CameraXOrientati
 
     @SuppressLint("RestrictedApi")
     private void buildVideoCapture() {
-        VideoCapture.Builder videoBuilder = new VideoCapture.Builder();
-        videoBuilder.setTargetRotation(mCameraPreviewView.getDisplay().getRotation());
-        if (videoFrameRate > 0) {
-            videoBuilder.setVideoFrameRate(videoFrameRate);
-        }
-        if (videoBitRate > 0) {
-            videoBuilder.setBitRate(videoBitRate);
-        }
-        mVideoCapture = videoBuilder.build();
+        Recorder.Builder recorderBuilder = new Recorder.Builder();
+        mRecorder = recorderBuilder.build();
+        mVideoCapture = VideoCapture.withOutput(mRecorder);
     }
+
 
 
     private void initCameraPreviewListener() {
@@ -1089,7 +1081,7 @@ public class CustomCameraView extends RelativeLayout implements CameraXOrientati
             mImagePreviewBg.setAlpha(0F);
         } else {
             try {
-                mVideoCapture.stopRecording();
+                mRecording.stop();
             } catch (Exception e) {
                 e.printStackTrace();
             }
