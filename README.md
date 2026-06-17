@@ -5,13 +5,19 @@
 
    [Download Demo Apk](https://github.com/LuckSiege/PictureSelector/raw/version_component/app/demo/demo_2023-12-17_060744_v3.11.2.apk)<br>
 
-[![Maven Central](https://img.shields.io/badge/maven%20central-v3.11.2-yellow)](https://github.com/LuckSiege)
+[![JitPack](https://img.shields.io/badge/JitPack-v4.0.6-brightgreen)](https://jitpack.io/#maxZhou7/PictureSelector)
 [![PRs Welcome](https://img.shields.io/badge/PRs-Welcome-brightgreen.svg)](https://github.com/LuckSiege)
 [![Star](https://img.shields.io/github/stars/LuckSiege/PictureSelector.svg)](https://github.com/LuckSiege/PictureSelector)
 
+> **Notice:** This project is based on the original [LuckSiege/PictureSelector](https://github.com/LuckSiege/PictureSelector) (v3.11.2) with the following modifications:
+> - Componentized architecture: split `selector`, `compress`, `ucrop`, `camerax` into independent modules
+> - Updated dependency declarations (`implementation` → `api` for transitive dependencies)
+> - Published via JitPack at [maxZhou7/PictureSelector](https://github.com/maxZhou7/PictureSelector)
+>
+> All credits for the original framework go to [LuckSiege](https://github.com/LuckSiege) and its contributors.
 
 ## Contents
--[Latest version](https://github.com/LuckSiege/PictureSelector/releases/tag/v3.11.2)<br>
+-[Latest version](https://github.com/LuckSiege/PictureSelector/releases/tag/v4.0.6)<br>
 -[Download](#Download)<br>
 -[Usage](#Usage)<br>
 -[Permission](#Permission)<br>
@@ -25,63 +31,62 @@
 
 ## Download
 
-Use Gradle
+Use Gradle (JitPack)
 
 ```sh
 repositories {
   google()
   mavenCentral()
+  maven { url 'https://jitpack.io' }
 }
 
 dependencies {
   // PictureSelector basic (Necessary)
-  implementation 'io.github.lucksiege:pictureselector:v3.11.2'
+  implementation 'com.github.maxZhou7.PictureSelector:pictureselector:v4.0.6'
 
   // image compress library (Not necessary)
-  implementation 'io.github.lucksiege:compress:v3.11.2'
+  implementation 'com.github.maxZhou7.PictureSelector:compress:v4.0.6'
 
   // uCrop library (Not necessary)
-  implementation 'io.github.lucksiege:ucrop:v3.11.2'
+  implementation 'com.github.maxZhou7.PictureSelector:ucrop:v4.0.6'
 
   // simple camerax library (Not necessary)
-  implementation 'io.github.lucksiege:camerax:v3.11.2'
-}
-```
-
-Kotlin Version [Demo](https://github.com/LuckSiege/PictureSelector/tree/master)
-
-```sh
-dependencies {
-  // Please do not upgrade across versions, please check the Kotlin version demo first
-  implementation 'io.github.lucksiege:pictureselector:kotlin-v1.0.0-beta'
+  implementation 'com.github.maxZhou7.PictureSelector:camerax:v4.0.6'
 }
 ```
 
 Or Maven:
 
 ```sh
+<repositories>
+  <repository>
+    <id>jitpack.io</id>
+    <url>https://jitpack.io</url>
+  </repository>
+</repositories>
+
 <dependency>
-  <groupId>io.github.lucksiege</groupId>
+  <groupId>com.github.maxZhou7.PictureSelector</groupId>
   <artifactId>pictureselector</artifactId>
-  <version>v3.11.2</version>
+  <version>v4.0.6</version>
 </dependency>
 
 <dependency>
-  <groupId>io.github.lucksiege</groupId>
+  <groupId>com.github.maxZhou7.PictureSelector</groupId>
   <artifactId>compress</artifactId>
-  <version>v3.11.2</version>
+  <version>v4.0.6</version>
 </dependency>
 
 <dependency>
-  <groupId>io.github.lucksiege</groupId>
+  <groupId>com.github.maxZhou7.PictureSelector</groupId>
   <artifactId>ucrop</artifactId>
-  <version>v3.11.2</version>
+  <version>v4.0.6</version>
 </dependency>
 
 <dependency>
-  <groupId>io.github.lucksiege</groupId>
+  <groupId>com.github.maxZhou7.PictureSelector</groupId>
   <artifactId>camerax</artifactId>
-  <version>v3.11.2</version>
+  <version>v4.0.6</version>
 </dependency>
 ```
 
