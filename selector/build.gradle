@@ -44,11 +44,11 @@ ext {
 apply from: '../publish.gradle'
 
 dependencies {
-    implementation libs.androidx.appcompat
-    implementation libs.androidx.recyclerview
-    implementation libs.androidx.activity
-    implementation libs.androidx.fragment
+    api libs.androidx.appcompat
+    api libs.androidx.recyclerview
+    api libs.androidx.activity
+    api libs.androidx.fragment
+    api libs.androidx.viewpager2
     implementation libs.androidx.exifinterface
-    implementation libs.androidx.viewpager2
     implementation libs.androidx.constraintlayout
 }
