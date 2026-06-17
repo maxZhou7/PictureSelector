@@ -1,23 +1,27 @@
 # PictureSelector 3.0
-   一款针对Android平台下的图片选择器，支持从相册获取图片、视频、音频&拍照，支持裁剪(单图or多图裁剪)、压缩、主题自定义配置等功能，支持动态获取权限&适配Android 5.0+系统的开源图片选择框架。<br>
+   一款针对Android平台下的图片选择器，支持从相册获取图片、视频、音频&拍照，支持裁剪(单图or多图裁剪)、压缩、主题自定义配置等功能，支持动态获取权限&适配Android 6.0+系统的开源图片选择框架。<br>
     
    [English🇺🇸](README.md)
 
    [效果体验](https://github.com/LuckSiege/PictureSelector/raw/version_component/app/demo/demo_2023-12-17_060744_v3.11.2.apk)<br>
 
-[![JitPack](https://img.shields.io/badge/JitPack-v4.0.6-brightgreen)](https://jitpack.io/#maxZhou7/PictureSelector)
+[![JitPack](https://img.shields.io/badge/JitPack-v4.1.0-brightgreen)](https://jitpack.io/#maxZhou7/PictureSelector)
 [![PRs Welcome](https://img.shields.io/badge/PRs-Welcome-brightgreen.svg)](https://github.com/LuckSiege)
 [![Star](https://img.shields.io/github/stars/LuckSiege/PictureSelector.svg)](https://github.com/LuckSiege/PictureSelector)
 
 > **声明：** 本项目基于原版 [LuckSiege/PictureSelector](https://github.com/LuckSiege/PictureSelector) (v3.11.2) 进行了以下修改：
 > - 组件化拆分：将 `selector`、`compress`、`ucrop`、`camerax` 拆分为独立模块
 > - 修复依赖传递问题：核心依赖从 `implementation` 改为 `api`，解决消费者编译时找不到类的问题
+> - CameraX 升级到 `1.5.0`，视频 API 从旧版 `VideoCapture` 迁移到 `Recorder` + `PendingRecording` + `VideoRecordEvent`
+> - 新增 `androidx.camera:camera-video` 依赖（CameraX 1.3.0+ 开始需要）
+> - **`minSdk` 提升至 23**（`camera-video:1.5.0` 要求）
+> - **`compileSdk` 提升至 35**（CameraX 1.5.0 要求）
 > - 通过 JitPack 发布：[maxZhou7/PictureSelector](https://github.com/maxZhou7/PictureSelector)
 >
 > 原版框架的所有功劳归于 [LuckSiege](https://github.com/LuckSiege) 及其贡献者。
 
 ## 目录
--[最新版本](https://github.com/LuckSiege/PictureSelector/releases/tag/v4.0.6)<br>
+-[最新版本](https://github.com/LuckSiege/PictureSelector/releases/tag/v4.1.0)<br>
 -[如何引用](#如何引用)<br>
 -[进阶使用](#进阶使用)<br>
 -[权限](#权限)<br>
@@ -44,16 +48,16 @@ repositories {
 
 dependencies {
   // PictureSelector 基础 (必须)
-  implementation 'com.github.maxZhou7.PictureSelector:pictureselector:v4.0.6'
+  implementation 'com.github.maxZhou7.PictureSelector:pictureselector:v4.1.0'
 
   // 图片压缩 (按需引入)
-  implementation 'com.github.maxZhou7.PictureSelector:compress:v4.0.6'
+  implementation 'com.github.maxZhou7.PictureSelector:compress:v4.1.0'
 
   // 图片裁剪 (按需引入)
-  implementation 'com.github.maxZhou7.PictureSelector:ucrop:v4.0.6'
+  implementation 'com.github.maxZhou7.PictureSelector:ucrop:v4.1.0'
 
   // 自定义相机 (按需引入)
-  implementation 'com.github.maxZhou7.PictureSelector:camerax:v4.0.6'
+  implementation 'com.github.maxZhou7.PictureSelector:camerax:v4.1.0'
 }
 ```
 
@@ -70,25 +74,25 @@ dependencies {
 <dependency>
   <groupId>com.github.maxZhou7.PictureSelector</groupId>
   <artifactId>pictureselector</artifactId>
-  <version>v4.0.6</version>
+  <version>v4.1.0</version>
 </dependency>
 
 <dependency>
   <groupId>com.github.maxZhou7.PictureSelector</groupId>
   <artifactId>compress</artifactId>
-  <version>v4.0.6</version>
+  <version>v4.1.0</version>
 </dependency>
 
 <dependency>
   <groupId>com.github.maxZhou7.PictureSelector</groupId>
   <artifactId>ucrop</artifactId>
-  <version>v4.0.6</version>
+  <version>v4.1.0</version>
 </dependency>
 
 <dependency>
   <groupId>com.github.maxZhou7.PictureSelector</groupId>
   <artifactId>camerax</artifactId>
-  <version>v4.0.6</version>
+  <version>v4.1.0</version>
 </dependency>
 ```
 

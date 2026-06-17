@@ -1,23 +1,27 @@
 # PictureSelector 3.0 
-   A PictureSelector for Android platform, which supports obtaining pictures, videos, audio & photos from photo albums, cutting (single picture or multi picture cutting), compression, theme custom configuration and other functions, and supports dynamic access & an open source picture selection framework suitable for Android 5.0 + system<br> 
+   A PictureSelector for Android platform, which supports obtaining pictures, videos, audio & photos from photo albums, cutting (single picture or multi picture cutting), compression, theme custom configuration and other functions, and supports dynamic access & an open source picture selection framework suitable for Android 6.0 + system<br> 
    
    [简体中文🇨🇳](README_CN.md)
 
    [Download Demo Apk](https://github.com/LuckSiege/PictureSelector/raw/version_component/app/demo/demo_2023-12-17_060744_v3.11.2.apk)<br>
 
-[![JitPack](https://img.shields.io/badge/JitPack-v4.0.6-brightgreen)](https://jitpack.io/#maxZhou7/PictureSelector)
+[![JitPack](https://img.shields.io/badge/JitPack-v4.1.0-brightgreen)](https://jitpack.io/#maxZhou7/PictureSelector)
 [![PRs Welcome](https://img.shields.io/badge/PRs-Welcome-brightgreen.svg)](https://github.com/LuckSiege)
 [![Star](https://img.shields.io/github/stars/LuckSiege/PictureSelector.svg)](https://github.com/LuckSiege/PictureSelector)
 
 > **Notice:** This project is based on the original [LuckSiege/PictureSelector](https://github.com/LuckSiege/PictureSelector) (v3.11.2) with the following modifications:
 > - Componentized architecture: split `selector`, `compress`, `ucrop`, `camerax` into independent modules
 > - Updated dependency declarations (`implementation` → `api` for transitive dependencies)
+> - Upgraded CameraX to `1.5.0`, migrated video API from legacy `VideoCapture` to `Recorder` + `PendingRecording` + `VideoRecordEvent`
+> - Added `androidx.camera:camera-video` dependency (required since CameraX 1.3.0+)
+> - **Bumped `minSdk` to 23** (required by `camera-video:1.5.0`)
+> - **Bumped `compileSdk` to 35** (required by CameraX 1.5.0)
 > - Published via JitPack at [maxZhou7/PictureSelector](https://github.com/maxZhou7/PictureSelector)
 >
 > All credits for the original framework go to [LuckSiege](https://github.com/LuckSiege) and its contributors.
 
 ## Contents
--[Latest version](https://github.com/LuckSiege/PictureSelector/releases/tag/v4.0.6)<br>
+-[Latest version](https://github.com/LuckSiege/PictureSelector/releases/tag/v4.1.0)<br>
 -[Download](#Download)<br>
 -[Usage](#Usage)<br>
 -[Permission](#Permission)<br>
@@ -42,16 +46,16 @@ repositories {
 
 dependencies {
   // PictureSelector basic (Necessary)
-  implementation 'com.github.maxZhou7.PictureSelector:pictureselector:v4.0.6'
+  implementation 'com.github.maxZhou7.PictureSelector:pictureselector:v4.1.0'
 
   // image compress library (Not necessary)
-  implementation 'com.github.maxZhou7.PictureSelector:compress:v4.0.6'
+  implementation 'com.github.maxZhou7.PictureSelector:compress:v4.1.0'
 
   // uCrop library (Not necessary)
-  implementation 'com.github.maxZhou7.PictureSelector:ucrop:v4.0.6'
+  implementation 'com.github.maxZhou7.PictureSelector:ucrop:v4.1.0'
 
   // simple camerax library (Not necessary)
-  implementation 'com.github.maxZhou7.PictureSelector:camerax:v4.0.6'
+  implementation 'com.github.maxZhou7.PictureSelector:camerax:v4.1.0'
 }
 ```
 
@@ -68,25 +72,25 @@ Or Maven:
 <dependency>
   <groupId>com.github.maxZhou7.PictureSelector</groupId>
   <artifactId>pictureselector</artifactId>
-  <version>v4.0.6</version>
+  <version>v4.1.0</version>
 </dependency>
 
 <dependency>
   <groupId>com.github.maxZhou7.PictureSelector</groupId>
   <artifactId>compress</artifactId>
-  <version>v4.0.6</version>
+  <version>v4.1.0</version>
 </dependency>
 
 <dependency>
   <groupId>com.github.maxZhou7.PictureSelector</groupId>
   <artifactId>ucrop</artifactId>
-  <version>v4.0.6</version>
+  <version>v4.1.0</version>
 </dependency>
 
 <dependency>
   <groupId>com.github.maxZhou7.PictureSelector</groupId>
   <artifactId>camerax</artifactId>
-  <version>v4.0.6</version>
+  <version>v4.1.0</version>
 </dependency>
 ```
 
