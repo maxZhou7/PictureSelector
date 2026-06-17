@@ -30,12 +30,6 @@ android {
 
     resourcePrefix 'ucrop_'
 
-    packaging {
-        jniLibs {
-            useLegacyPackaging = false
-        }
-    }
-
 }
 
 ext {

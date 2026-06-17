@@ -27,12 +27,6 @@ android {
     buildFeatures {
         buildConfig = true
     }
-
-    packaging {
-        jniLibs {
-            useLegacyPackaging = false
-        }
-    }
 }
 
 ext {
