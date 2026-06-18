@@ -86,7 +86,6 @@ dependencies {
     implementation libs.androidx.navigation.fragment.ktx
     implementation libs.androidx.navigation.ui.ktx
     debugImplementation libs.leakcanary.android
-    implementation libs.subsampling.scale.image
     implementation libs.androidx.appcompat
     implementation libs.exoplayer
     implementation libs.androidx.constraintlayout
