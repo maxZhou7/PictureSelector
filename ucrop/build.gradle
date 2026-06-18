@@ -9,6 +9,7 @@ android {
         minSdk 19
         targetSdk 34
         vectorDrawables.useSupportLibrary = true
+        consumerProguardFiles "consumer-rules.pro"
     }
     buildTypes {
         release {

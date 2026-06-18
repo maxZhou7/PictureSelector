@@ -460,6 +460,10 @@ The advanced use cases are as follow：
 -keep class com.yalantis.ucrop** { *; }
 -keep interface com.yalantis.ucrop** { *; }
 ```
+v4.1.0之后版本
+> 本项目所有模块均已内嵌 consumer ProGuard 规则（`consumer-rules.pro`），
+> 当你通过 Gradle 依赖引用时，R8/ProGuard 会自动应用这些规则，
+> **无需在宿主项目中手动添加任何 keep 规则。**
 ## License
 ```sh
 Copyright 2016 Luck
